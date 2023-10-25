@@ -1,0 +1,3 @@
+/root/Projects/COMPILADOR2/COMPILADOR2/bin/COMPILADOR2.dll
+/root/Projects/COMPILADOR2/COMPILADOR2/obj/Release/COMPILADOR2.csproj.CoreCompileInputs.cache
+/root/Projects/COMPILADOR2/COMPILADOR2/obj/Release/COMPILADOR2.dll
