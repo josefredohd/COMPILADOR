@@ -24,7 +24,11 @@ namespace COMPILADOR2
 
         string contenidoArchivo;
         string Acum = null;
-        static List<int> LToken = new List<int>();
+        bool dvar = false;
+        static List<COMPILADOR2.Tokens> LToken = new List<Tokens>();
+        static List<Variables> LVar = new List<Variables>();
+        string Tipo, Valor, Pertenece;
+        string Id, Id2;
         int cont = 0;
         int nextoken;
         int ENTERO = 140;
@@ -51,8 +55,8 @@ namespace COMPILADOR2
         DataTable dt = new DataTable();
 
 
-        List<string> PalRes = new List<string>
-        {"ENTERO","REAL","BOLEANO","CADENA","SI","ENTONCES","SINO","HASTA","HACER","MIENTRAS","FUNCION","INICIO","FIN","LEER","ESCRIBIR","DESDE","REGRESA","PROGRAMA","FALSO","VERDADERO"};
+        static List<string> PalRes = new List<string>
+        {"ENTERO","REAL","BOLEANO","CADENA","SI","ENTONCES","SINO","HASTA","HACER","MIENTRAS","FUNCION","INICIO","FIN","LEER","ESCRIBIR","DESDE","REGRESA","PROGRAMA","FALSO","VERDADERO","LLAMAR"};
         int[,] Matriz = new int[25, 26]
         { // 0…9   e.E    .     _     +     -     =     /    EOF-EOL   *     ^     %     :     >     <     Y     O     N    ""   (      )    ;   Espacio  a…z,A…Z     ,        O.C
             {  1,    7,   19,    7,    8,    9,   18,   10,    - 12,   14,  108,  111,   15,   16,   17,    7,    7,    7,   24,  129,  130,  131,       0,      7,   132,  - 10},
@@ -153,11 +157,11 @@ namespace COMPILADOR2
                 {
                     StreamReader sr = new StreamReader("/home/fredo/archivos/FREDO.txt");
                     fileText = sr.ReadToEnd();
-                     editArch.Text = fileText;
-                       sr.Dispose();
+                    editArch.Text = fileText;
+                    sr.Dispose();
                 }
             }
-            
+
         }
 
         public void LeerArchivo()
@@ -196,10 +200,10 @@ namespace COMPILADOR2
                 {
                     File.Delete(destinationFile);
                 }
-                    string writerfile = @"/home/fredo/archivos/FREDO.txt";
-                    System.IO.File.WriteAllText(writerfile, this.editArch.Text);
-                    string script = string.Format("swal('Archivo modificado exitosamente', '', 'success');");
-                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                string writerfile = @"/home/fredo/archivos/FREDO.txt";
+                System.IO.File.WriteAllText(writerfile, this.editArch.Text);
+                string script = string.Format("swal('Archivo modificado exitosamente', '', 'success');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
 
             }
         }
@@ -209,7 +213,7 @@ namespace COMPILADOR2
             //dt.Columns.AddRange(new DataColumn[5] { new DataColumn("Linea", typeof(String)),
             //new DataColumn("Token", typeof(String)), new DataColumn("Error", typeof(String)), new DataColumn("Valor", typeof(String)), new DataColumn("TipDato", typeof(String))});
 
-            TextReader LeerLine = new StreamReader(@"/home/fredo/archivos/FREDO.txt");
+            StreamReader LeerLine = new StreamReader(@"/home/fredo/archivos/FREDO.txt");
 
             while ((contenidoArchivo = LeerLine.ReadLine()) != null)
             {
@@ -287,9 +291,8 @@ namespace COMPILADOR2
                                 Columna = 7;
                                 break;
                             }
-                        case char resulfin when (resulfin == 04):
+                        case char resulfin when (resulfin == 03):
                             {
-                                Acum = Acum + resultado;
                                 Columna = 8;
                                 break;
                             }
@@ -373,7 +376,6 @@ namespace COMPILADOR2
                             }
                         case char resulfin when (resulfin == 32):
                             {
-                                Acum = Acum + resultado;
                                 Columna = 22;
                                 break;
                             }
@@ -401,13 +403,17 @@ namespace COMPILADOR2
                     {
                         if (Estado == 101)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Numero");
                             if (Estado == 101 && resultado == 32 || Estado == 101 && Columna == 25 || Estado == 101 && Columna == 8)
                             {
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Entero");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Entero",
+                                    Lexema = Acum
+                                });
                                 Estado = 0;
 
                             }
@@ -417,23 +423,31 @@ namespace COMPILADOR2
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Entero");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Entero",
+                                    Lexema = Acum
+                                });
                             }
                             Acum = "";
                             i--;
                         }
                         if (Estado == 102)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Decimal");
                             if (Estado == 102 && resultado == 32 || Estado == 102 && Columna == 25 || Estado == 102 && Columna == 8)
                             {
                                 Acum = Acum.Remove(Acum.Length - 1);
-                                dt.Rows.Add(LineNum, Estado, "", Acum, "Decimal");
+                                dt.Rows.Add(LineNum, Estado, "", Acum, "Real");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Real",
+                                    Lexema = Acum
+                                });
                                 Estado = 0;
-
                             }
                             if (Estado == 102)
                             {
@@ -441,7 +455,12 @@ namespace COMPILADOR2
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Decimal");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Real",
+                                    Lexema = Acum
+                                });
                             }
                             Acum = "";
                             i--;
@@ -458,16 +477,76 @@ namespace COMPILADOR2
                                         dt.Rows.Add(LineNum, Estado, "", Acum, "Palabra Reservada");
                                         tabla.DataSource = dt;
                                         tabla.DataBind();
-                                        LToken.Add(Estado);
+                                        LToken.Add(new Tokens()
+                                        {
+                                            NumTok = Estado,
+                                            Descripcion = "Palabra Reservada",
+                                            Lexema = Acum
+                                        });
+                                        if (Estado == ENTERO || Estado == CADENA || Estado == BOLEANO || Estado == REAL)
+                                        {
+                                            Tipo = Acum;
+                                        }
                                         break;
                                     }
-                                    if (b == 19)
+                                    if (b == 20)
                                     {
-                                        dt.Rows.Add(LineNum, Estado, "", Acum, "Identificador");
-                                        tabla.DataSource = dt;
-                                        tabla.DataBind();
-                                        LToken.Add(Estado);
-                                        Estado = 0;
+                                        if(Tipo != null)
+                                        {
+                                            Id = Acum;
+                                            if (Guardar() == false)
+                                            {
+                                                for (int g = 0; g < LVar.Count; g++)
+                                                {
+                                                    if (LVar[g].id == Acum)
+                                                    {
+                                                        dt.Rows.Add(LineNum, Estado, "", Acum, LVar[g].tipo);
+                                                        tabla.DataSource = dt;
+                                                        tabla.DataBind();
+                                                        LToken.Add(new Tokens()
+                                                        {
+                                                            NumTok = Estado,
+                                                            Descripcion = LVar[g].tipo,
+                                                            Lexema = Acum
+                                                        });
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            for (int g = 0; g < LVar.Count; g++)
+                                            {
+                                                if (LVar[g].id == Acum)
+                                                {
+                                                    dt.Rows.Add(LineNum, Estado, "", Acum, LVar[g].tipo);
+                                                    tabla.DataSource = dt;
+                                                    tabla.DataBind();
+                                                    LToken.Add(new Tokens()
+                                                    {
+                                                        NumTok = Estado,
+                                                        Descripcion = LVar[g].tipo,
+                                                        Lexema = Acum
+                                                    });
+                                                    Acum = "";
+                                                    break;
+                                                }
+                                            }
+                                            if (Acum != "")
+                                            {
+                                                dt.Rows.Add(LineNum, Estado, "", Acum, "Identificador");
+                                                tabla.DataSource = dt;
+                                                tabla.DataBind();
+                                                LToken.Add(new Tokens()
+                                                {
+                                                    NumTok = Estado,
+                                                    Descripcion = "Identificador",
+                                                    Lexema = Acum
+                                                });
+                                            }
+                                            Estado = 0;
+                                        }
                                     }
                                 }
                             }
@@ -482,32 +561,96 @@ namespace COMPILADOR2
                                         dt.Rows.Add(LineNum, Estado, "", Acum, "Palabra Reservada");
                                         tabla.DataSource = dt;
                                         tabla.DataBind();
-                                        LToken.Add(Estado);
+                                        LToken.Add(new Tokens()
+                                        {
+                                            NumTok = Estado,
+                                            Descripcion = "Palabra Reservada",
+                                            Lexema = Acum
+                                        });
+                                        if (Estado == ENTERO || Estado == CADENA || Estado == BOLEANO || Estado == REAL)
+                                        {
+                                            Tipo = Acum;
+                                        }
                                         break;
                                     }
-                                    if (b == 19)
+                                    if (b == 20)
                                     {
-                                        dt.Rows.Add(LineNum, Estado, "", Acum, "Identificador");
-                                        tabla.DataSource = dt;
-                                        tabla.DataBind();
-                                        LToken.Add(Estado);
+
+                                        if (Tipo != null)
+                                        {
+                                            Id = Acum;
+                                            if (Guardar() == false)
+                                            {
+                                                for (int g = 0; g < LVar.Count; g++)
+                                                {
+                                                    if (LVar[g].id == Acum)
+                                                    {
+                                                        dt.Rows.Add(LineNum, Estado, "", Acum, LVar[g].tipo);
+                                                        tabla.DataSource = dt;
+                                                        tabla.DataBind();
+                                                        LToken.Add(new Tokens()
+                                                        {
+                                                            NumTok = Estado,
+                                                            Descripcion = LVar[g].tipo,
+                                                            Lexema = Acum
+                                                        });
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            for (int g = 0; g < LVar.Count; g++)
+                                            {
+                                                if (LVar[g].id == Acum)
+                                                {
+                                                    dt.Rows.Add(LineNum, Estado, "", Acum, LVar[g].tipo);
+                                                    tabla.DataSource = dt;
+                                                    tabla.DataBind();
+                                                    LToken.Add(new Tokens()
+                                                    {
+                                                        NumTok = Estado,
+                                                        Descripcion = LVar[g].tipo,
+                                                        Lexema = Acum
+                                                    });
+                                                    Acum = "";
+                                                    break;
+                                                }
+                                            }
+                                            if (Acum != "")
+                                            {
+                                                dt.Rows.Add(LineNum, Estado, "", Acum, "Identificador");
+                                                tabla.DataSource = dt;
+                                                tabla.DataBind();
+                                                LToken.Add(new Tokens()
+                                                {
+                                                    NumTok = Estado,
+                                                    Descripcion = "Identificador",
+                                                    Lexema = Acum
+                                                });
+                                            }
+                                            Estado = 0;
+                                        }
                                     }
-
                                 }
-
                             }
                             Acum = "";
                             i--;
                         }
                         if (Estado == 104)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Suma");
                             if (Estado == 104 && resultado == 32 || Estado == 104 && Columna == 25 || Estado == 104 && Columna == 8)
                             {
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Suma");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Suma",
+                                    Lexema = Acum
+                                });
                                 Estado = 0;
                             }
                             if (Estado == 104)
@@ -516,20 +659,29 @@ namespace COMPILADOR2
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Suma");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Suma",
+                                    Lexema = Acum
+                                });
                             }
                             Acum = "";
                             i--;
                         }
                         if (Estado == 105)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Resta");
                             if (Estado == 105 && resultado == 32 || Estado == 105 && Columna == 25 || Estado == 105 && Columna == 8)
                             {
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "R");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Resta",
+                                    Lexema = Acum
+                                });
                                 Estado = 0;
 
                             }
@@ -539,20 +691,29 @@ namespace COMPILADOR2
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Resta");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Resta",
+                                    Lexema = Acum
+                                });
                             }
                             Acum = "";
                             i--;
                         }
                         if (Estado == 106)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " División");
                             if (Estado == 106 && resultado == 32 || Estado == 106 && Columna == 25 || Estado == 106 && Columna == 8)
                             {
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "División");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "División",
+                                    Lexema = Acum
+                                });
                                 Estado = 0;
 
                             }
@@ -562,20 +723,29 @@ namespace COMPILADOR2
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Divisón");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "División",
+                                    Lexema = Acum
+                                });
                             }
                             Acum = "";
                             i--;
                         }
                         if (Estado == 107)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Multiplicador");
                             if (Estado == 107 && resultado == 32 || Estado == 107 && Columna == 25 || Estado == 107 && Columna == 8)
                             {
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Multiplicador");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Multiplicador",
+                                    Lexema = Acum
+                                });
                                 Estado = 0;
 
                             }
@@ -585,109 +755,159 @@ namespace COMPILADOR2
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Multiplicador");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Multiplicador",
+                                    Lexema = Acum
+                                });
                             }
                             Acum = "";
                             i--;
                         }
                         if (Estado == 108)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Potencia");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Potencia");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Potencia",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 109)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Incrementador");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Incrementador");
                             tabla.DataSource = dt;
                             tabla.DataBind();
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Incrementador",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 110)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Decrementador");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Decrementador");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Decrementador",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 111)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Modulador");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Modulador");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Modulador",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 112)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Operador de Asignacion");
-                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación");
+                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación(:=)");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Operador de Asignación",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 113)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Operador de Asignacion");
-                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación");
+                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación(+=)");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Operador de Asignación",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 114)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Operador de Asignacion");
-                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación");
+                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación(-=)");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Operador de Asignación",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 115)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Operador de Asignacion");
-                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación");
+                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación(*=)");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Operador de Asignación",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 116)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Operador de Asignacion");
-                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación");
+                            dt.Rows.Add(LineNum, Estado, "", Acum, "Operador de Asignación(/=)");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Operador de Asignación",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 117)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Comentario de una sola linea");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Comentario");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Comentario",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 118)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Mayor que");
                             if (Estado == 118 && resultado == 32 || Estado == 118 && Columna == 25 || Estado == 118 && Columna == 8)
                             {
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Mayor que");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Mayor que",
+                                    Lexema = Acum
+                                });
                                 Estado = 0;
 
                             }
@@ -697,20 +917,29 @@ namespace COMPILADOR2
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Mayor que");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Mayor que",
+                                    Lexema = Acum
+                                });
                             }
                             Acum = "";
                             i--;
                         }
                         if (Estado == 119)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Menor que");
                             if (Estado == 119 && resultado == 32 || Estado == 119 && Columna == 25 || Estado == 119 && Columna == 8)
                             {
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Menor que");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Menor que",
+                                    Lexema = Acum
+                                });
                                 Estado = 0;
 
                             }
@@ -720,144 +949,200 @@ namespace COMPILADOR2
                                 dt.Rows.Add(LineNum, Estado, "", Acum, "Menor que");
                                 tabla.DataSource = dt;
                                 tabla.DataBind();
-                                LToken.Add(Estado);
+                                LToken.Add(new Tokens()
+                                {
+                                    NumTok = Estado,
+                                    Descripcion = "Menor que",
+                                    Lexema = Acum
+                                });
                             }
                             Acum = "";
                             i--;
                         }
                         if (Estado == 120)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Mayor igual que");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Mayor igual que");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Mayor igual que",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 121)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Menor igual que");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Menor igual que");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Menor igual que",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 122)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Diferente que");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Diferente que");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Diferente que",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 123)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Igual que");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Igual que");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Igual que",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 124)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Y");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Y");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Y",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 125)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " O");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "O");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "O",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 126)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " NO");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "NO");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "NO",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 127)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Cadena");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Cadena");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Cadena",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 128)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Comentario en bloque");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Comentario en bloque");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Comentario en bloque",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 129)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Paréntesis abierto");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Paréntesis abierto");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Paréntesis abierto",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 130)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Paréntesis cerrado");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Paréntesis cerrado");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Paréntesis cerrado",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 131)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Punto y Coma");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Punto y coma");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Punto y coma",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         if (Estado == 132)
                         {
-                            //listToken.Items.Add(Convert.ToString(Estado) + " Coma");
                             dt.Rows.Add(LineNum, Estado, "", Acum, "Coma");
                             tabla.DataSource = dt;
                             tabla.DataBind();
-                            LToken.Add(Estado);
+                            LToken.Add(new Tokens()
+                            {
+                                NumTok = Estado,
+                                Descripcion = "Coma",
+                                Lexema = Acum
+                            });
                             Acum = "";
                         }
                         Estado = 0;
                     }
                     if (Estado < 0)
                     {
-                        if (Estado <= -1 && Estado >= -8)
+                        if (Estado <= -1 && Estado >= -10)
                         {
                             ListErrores(Estado);
                             Estado = 0;
                         }
-                        Acum = "";
                     }
                 }
                 while (Estado >= 0 && Estado <= 100);
             }
-            string msg = string.Format("swal('Fin de Cadena', '', 'warning');");
-            ClientScript.RegisterStartupScript(this.GetType(), "swal", msg, true);
+            //string msg = string.Format("swal('Fin de Cadena', '', 'warning');");
+            //ClientScript.RegisterStartupScript(this.GetType(), "swal", msg, true);
             LineNum = 0;
         }
 
@@ -871,7 +1156,6 @@ namespace COMPILADOR2
                     {
                         string script = string.Format("swal('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        //listToken.Items.Add(Convert.ToString(Error + " Error: Se esperaba un número o un -"));
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un número o un -");
                         tabla.DataSource = dt;
                         tabla.DataBind();
@@ -882,7 +1166,6 @@ namespace COMPILADOR2
                         Acum = "";
                         string script = string.Format("swal('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        //listToken.Items.Add(Convert.ToString(Error + " Error: Se esperaba un número"));
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un número");
                         tabla.DataSource = dt;
                         tabla.DataBind();
@@ -893,7 +1176,6 @@ namespace COMPILADOR2
                         Acum = "";
                         string script = string.Format("swal('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        //listToken.Items.Add(Convert.ToString(Error + " Error"));
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba /");
                         tabla.DataSource = dt;
                         tabla.DataBind();
@@ -904,7 +1186,6 @@ namespace COMPILADOR2
                         Acum = "";
                         string script = string.Format("swal('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        //listToken.Items.Add(Convert.ToString(Error + " Error: Se esperaba un ="));
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un ==");
                         tabla.DataSource = dt;
                         tabla.DataBind();
@@ -915,8 +1196,7 @@ namespace COMPILADOR2
                         Acum = "";
                         string script = string.Format("swal('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        //listToken.Items.Add(Convert.ToString(Error + " Error: Se esperaba una O"));
-                        dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba una 0");
+                        dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba una O");
                         tabla.DataSource = dt;
                         tabla.DataBind();
                         break;
@@ -926,7 +1206,6 @@ namespace COMPILADOR2
                         Acum = "";
                         string script = string.Format("swal('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        //listToken.Items.Add(Convert.ToString(Error + " Error: Se esperaba un operador lógico"));
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un operador lógico");
                         tabla.DataSource = dt;
                         tabla.DataBind();
@@ -937,7 +1216,6 @@ namespace COMPILADOR2
                         Acum = "";
                         string script = string.Format("swal('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        //listToken.Items.Add(Convert.ToString(Error + " Error: Se esperaba un punto"));
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un punto");
                         tabla.DataSource = dt;
                         tabla.DataBind();
@@ -948,7 +1226,6 @@ namespace COMPILADOR2
                         Acum = "";
                         string script = string.Format("ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        //listToken.Items.Add(Convert.ToString(Error + " Error: Se esperaban comillas"));
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaban comillas");
                         tabla.DataSource = dt;
                         tabla.DataBind();
@@ -959,13 +1236,58 @@ namespace COMPILADOR2
                         Acum = "";
                         string script = string.Format("swal('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        //listToken.Items.Add(Convert.ToString(Error + " Error: Caracter inválido"));
+                        dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un asignador :=");
+                        tabla.DataSource = dt;
+                        tabla.DataBind();
+                        break;
+                    }
+                case -10:
+                    {
+                        Acum = "";
+                        string script = string.Format("swal('ERROR', '', 'error');");
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Caracter inválido");
                         tabla.DataSource = dt;
                         tabla.DataBind();
                         break;
                     }
+                case -11:
+                    {
+                        Acum = "";
+                        string script = string.Format("swal('ERROR', '', 'error');");
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                        dt.Rows.Add(LineNum, "", Error, "Error: Ya se declaró la variable");
+                        tabla.DataSource = dt;
+                        tabla.DataBind();
+                        break;
+                    }
             }
+        }
+
+        //Funcion para guardar variables
+        private bool Guardar()
+        {
+            LVar.Add(new Variables()
+            {
+                tipo = Tipo,
+                id = Id
+            });
+            if (Id2 == Id)
+            {
+                ListErrores(-11);
+                Id2 = Id;
+                Tipo = null;
+                Id = null;
+                return true;
+            }
+            else
+            {
+                Id2 = Id;
+                Tipo = null;
+                Id = null;
+                return false;
+            }
+
         }
 
     }
