@@ -23,9 +23,6 @@
             <h1 class="text-center font-italic">COMPILADOR</h1> 
             <h3 class="text-center font-italic">Hecho Por: José Alfredo Hernández Félix</h3> 
       
-            
-            <asp:Button ID="btnLimpiarToken" class="btn btn-secondary" runat="server" Text="Limpiar Tokens" OnClick="btnLimpiarToken_Click" />
-            <br>
             <asp:TextBox ID="editArch" class="NumLine form-control" TextMode="MultiLine" runat="server" Height="210px" Width="500px"></asp:TextBox>
             <script>
             var editor = CodeMirror.fromTextArea
@@ -37,24 +34,30 @@
 
             </script>
 
-            <asp:FileUpload ID="FileUpload1" class="form-control" accept=".txt" runat="server" />
-            <asp:Button ID="btnSubir" class="btn btn-primary" runat="server" OnClick="btnSubir_Click" Text="Subir archivo" />
-            <asp:Button ID="btnTokenArch" class="btn btn-primary" runat="server" OnClick="btnTokenArch_Click" Text="Tokens Archivo" />
-            <asp:Button ID="btnArch" class="btn btn-primary" runat="server" OnClick="btnArch_Click" Text="Leer Archivo" />
-            <asp:Button ID="btnGuardarArch" class="btn btn-primary" runat="server" Text="Modificar archivo" OnClick="btnGuardarArch_Click" />
-            <asp:Button ID="btnLimpiarArch" class="btn btn-secondary" runat="server" Text="Limpiar Archivo" OnClick="btnLimpiarArch_Click" />
-            
-            <br>
-            <asp:GridView id="tabla" runat="server" CssClass="table table-bordered table-striped" style="margin: 0 auto; width: 80%;" AutoGenerateColumns="false">
-                <HeaderStyle CssClass="table-primary" />
-                <Columns>
-                    <asp:BoundField DataField="Linea" HeaderText="Línea" />
-                    <asp:BoundField DataField="Token" HeaderText="Token" />
-                    <asp:BoundField DataField="Error" HeaderText="Error" />
-                    <asp:BoundField DataField="Valor" HeaderText="Valor" />
-                    <asp:BoundField DataField="TipDato" HeaderText="Tipo de Dato" />
-                </Columns>
-            </asp:GridView>
+         <div class="flex-shrink-0 text-center">
+            <div class="mb-3"> <!-- Agregamos margen inferior para espaciado -->
+                <asp:FileUpload ID="FileUpload1" class="form-control mt-2" accept=".txt" runat="server" />
+                <asp:Button ID="btnSubir" class="btn btn-primary mt-2" runat="server" OnClick="btnSubir_Click" Text="Subir archivo" />
+                <asp:Button ID="btnTokenArch" class="btn btn-primary mt-2" runat="server" OnClick="btnTokenArch_Click" Text="Tokens Archivo" />
+                <asp:Button ID="btnArch" class="btn btn-primary mt-2" runat="server" OnClick="btnArch_Click" Text="Leer Archivo" />
+                <asp:Button ID="btnGuardarArch" class="btn btn-primary mt-2" runat="server" Text="Modificar archivo" OnClick="btnGuardarArch_Click" />
+                <asp:Button ID="btnLimpiarArch" class="btn btn-secondary mt-2" runat="server" OnClick="btnLimpiarArch_Click" Text="Limpiar Archivo" />
+                <asp:Button ID="btnLimpiarToken" class="btn btn-secondary mt-2" runat="server" Text="Limpiar Tokens" OnClick="btnLimpiarToken_Click" />
+            </div>
+
+            <div class="text-center" style="height: 350px; overflow: auto"> <!-- Centro la tabla aquí -->
+                <asp:GridView id="tabla" runat="server" CssClass="table table-bordered table-striped" style="width: 100%;" AutoGenerateColumns="false">
+                    <HeaderStyle CssClass="table-primary" />
+                    <Columns>
+                        <asp:BoundField DataField="Linea" HeaderText="Línea" />
+                        <asp:BoundField DataField="Token" HeaderText="Token" />
+                        <asp:BoundField DataField="Error" HeaderText="Error" />
+                        <asp:BoundField DataField="Valor" HeaderText="Valor" />
+                        <asp:BoundField DataField="TipDato" HeaderText="Tipo de Dato" />
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
 
         </div>
     </form>

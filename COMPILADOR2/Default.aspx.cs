@@ -93,7 +93,7 @@ namespace COMPILADOR2
             tabla.DataSource = null;
             tabla.DataBind();
             LToken.Clear();
-            PalRes.Clear();
+            LVar.Clear();
         }
 
         protected void btnLimpiarArch_Click(object sender, EventArgs e)
