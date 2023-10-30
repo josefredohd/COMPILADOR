@@ -35,17 +35,17 @@
             </script>
 
          <div class="flex-shrink-0 text-center">
-            <div class="mb-3"> <!-- Agregamos margen inferior para espaciado -->
+            <div class="mb-3">
                 <asp:FileUpload ID="FileUpload1" class="form-control mt-2" accept=".txt" runat="server" />
                 <asp:Button ID="btnSubir" class="btn btn-primary mt-2" runat="server" OnClick="btnSubir_Click" Text="Subir archivo" />
                 <asp:Button ID="btnTokenArch" class="btn btn-primary mt-2" runat="server" OnClick="btnTokenArch_Click" Text="Tokens Archivo" />
                 <asp:Button ID="btnArch" class="btn btn-primary mt-2" runat="server" OnClick="btnArch_Click" Text="Leer Archivo" />
                 <asp:Button ID="btnGuardarArch" class="btn btn-primary mt-2" runat="server" Text="Modificar archivo" OnClick="btnGuardarArch_Click" />
-                <asp:Button ID="btnLimpiarArch" class="btn btn-secondary mt-2" runat="server" OnClick="btnLimpiarArch_Click" Text="Limpiar Archivo" />
                 <asp:Button ID="btnLimpiarToken" class="btn btn-secondary mt-2" runat="server" Text="Limpiar Tokens" OnClick="btnLimpiarToken_Click" />
+                <asp:Button ID="btnCompilar" class="btn btn-success mt-2" runat="server" Text="Compilar" OnClick="btnCompilar_Click" />
             </div>
 
-            <div class="text-center" style="height: 350px; overflow: auto"> <!-- Centro la tabla aquí -->
+            <div class="text-center" style="height: 350px; overflow: auto">
                 <asp:GridView id="tabla" runat="server" CssClass="table table-bordered table-striped" style="width: 100%;" AutoGenerateColumns="false">
                     <HeaderStyle CssClass="table-primary" />
                     <Columns>

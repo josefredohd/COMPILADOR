@@ -27,9 +27,11 @@ namespace COMPILADOR2
         bool dvar = false;
         static List<COMPILADOR2.Tokens> LToken = new List<Tokens>();
         static List<Variables> LVar = new List<Variables>();
+        //Declaración de variables
         string Tipo, Valor, Pertenece;
         string Id, Id2;
         int cont = 0;
+        int nextok;
         int nextoken;
         int ENTERO = 140;
         int REAL = 141;
@@ -94,11 +96,6 @@ namespace COMPILADOR2
             tabla.DataBind();
             LToken.Clear();
             LVar.Clear();
-        }
-
-        protected void btnLimpiarArch_Click(object sender, EventArgs e)
-        {
-            editArch.Text = "";
         }
 
         protected void btnSubir_Click(object sender, EventArgs e)
@@ -1146,6 +1143,142 @@ namespace COMPILADOR2
             LineNum = 0;
         }
 
+        //Botón para sintaxis (bloque principal)
+        protected void btnCompilar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        //Función para saber el siguiente Token
+        public void NextToken()
+        {
+            if (cont < LToken.Count)
+            {
+                cont++;
+                nextok = LToken[cont].NumTok;
+            }
+            else
+            {
+                nextok = 0;
+            }
+        }
+
+        //Función para la declaración de variables
+        public void DecVariables()
+        {
+            if (nextok == ENTERO || nextok == CADENA || nextok == REAL || nextok == BOLEANO)//Si el siguiente token es un tipo de dato
+            {
+                do
+                {
+                    Tipo = LToken[cont].Lexema; //Se guarda el tipo para la variable a declarar
+                    NextToken();
+                    if (nextok != 103)
+                    {
+                        string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    }
+                    Id = LToken[cont].Lexema; 
+                    for (int i = 0; i < LVar.Count; i++)
+                    {
+                        if (Id == LVar[i].id)//Si la variable que se esta declarando ya ha sido declarada anteriormente, da error
+                        {
+                            string script = string.Format("swal('La variable {0} ya se ha declarado', '', 'error');", Id);
+                            ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                        }
+                    }
+                    NextToken();
+                    if (nextok == 112)
+                    {
+                        do
+                        {
+                            NextToken();
+                            if (nextok == 101 || nextok == 102 || nextok == 127 || nextok == FALSO || nextok == VERDADERO)
+                            {
+                                Valor = LToken[cont].Lexema;//Se guarda el valor asignado
+                                ValorVar(Tipo, nextok, Valor);//Verificamos si el valor es compatible al tipo de dato que se le asigno a la variable
+                                if (nextok == 132)
+                                {
+                                    do
+                                    {
+                                        NextToken();
+                                        GuardarVar();
+                                        if (nextok != 103)
+                                        {
+                                            string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                                            ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                        }
+                                        Id = LToken[cont].Lexema;
+                                        for (int i = 0; i < LVar.Count; i++)//Se recorre la lista de variables para verificar si ya existe
+                                        {
+                                            if (Id == LVar[i].id)
+                                            {
+                                                string script = string.Format("swal('La variable {0} ya se ha declarado', '', 'error');", Id);
+                                                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                            }
+                                        }
+                                        NextToken();
+                                    } while (nextok == 132);
+                                }
+                            }
+                            else
+                            {
+                                string script = string.Format("swal('Se esperaba un valor', '', 'error');");
+                                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                            }
+                        } while (nextok == 112);
+
+                    }
+                    if (nextok == 132)
+                    {
+                        GuardarVar();
+                        do
+                        {
+                            NextToken();
+                            Id = LToken[cont].Lexema;//Se guarda el identificador
+                            if (nextok != 103)
+                            {
+                                string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                            }
+                            for (int i = 0; i < LVar.Count; i++)//Se recorre la lista de variables para verificar si ya existe
+                            {
+                                if (Id == LVar[i].id)
+                                {
+                                    string script = string.Format("swal('La variable {0} ya se ha declarado', '', 'error');", Id);
+                                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                }
+                            }
+                            NextToken();
+                            if (nextok == 112)
+                            {
+                                NextToken();
+                                if (nextok == 101 || nextok == 102 || nextok == 127 || nextok == FALSO || nextok == VERDADERO) //Si el siguiente token es alguno de estos
+                                {
+                                    Valor = LToken[cont].Lexema;//Se guarda el valor
+                                    ValorVar(Tipo, nextok, Valor);//Se verifica si el valor es compatible al tipo de dato que se le asignó a la variable
+                                }
+                                else
+                                {
+                                    string script = string.Format("swal('Se esperaba un valor', '', 'error');");
+                                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                }
+                            }
+                            GuardarVar();
+                        } while (nextok == 132);
+                    }
+                    if (nextok != 131)
+                    {
+                        string script = string.Format("swal('Se esperaba un ;', '', 'error');");
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    }
+                    if (Id != null)
+                    {
+                        GuardarVar();
+                    }
+                    NextToken();
+                } while (nextok == ENTERO || nextok == CADENA || nextok == REAL || nextok == BOLEANO);
+            }
+        }
 
         public void ListErrores(int Error)
         {
@@ -1264,7 +1397,7 @@ namespace COMPILADOR2
             }
         }
 
-        //Funcion para guardar variables
+        //Funcion para guardar variables de los tokens
         private bool Guardar()
         {
             LVar.Add(new Variables()
@@ -1288,6 +1421,64 @@ namespace COMPILADOR2
                 return false;
             }
 
+        }
+
+
+        //Guardar Variables
+        private void GuardarVar()
+        {
+            LVar.Add(new Variables()
+            {
+                tipo = Tipo,
+                id = Id,
+                valor = Valor,
+                pertenece = Pertenece
+            });
+            Id = null;
+            Valor = null;
+        }
+
+        public void ValorVar(string Tipo, int valor, string Va)
+        {
+            if (Tipo.Equals("Entero", StringComparison.OrdinalIgnoreCase))
+            {
+                if (valor != 101)
+                {
+                    string script = string.Format("swal('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                }
+                NextToken();
+            }
+            if (Tipo.Equals("Real", StringComparison.OrdinalIgnoreCase))
+            {
+                if (valor != 102)
+                {
+                    string script = string.Format("swal('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                }
+                NextToken();
+            }
+            if (Tipo.Equals("Cadena", StringComparison.OrdinalIgnoreCase))
+            {
+                if (valor != 127)
+                {
+                    string script = string.Format("swal('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                }
+                NextToken();
+            }
+            if (Tipo.Equals("Boleano", StringComparison.OrdinalIgnoreCase))
+            {
+                if (valor == FALSO || valor == VERDADERO)
+                {
+                    NextToken();
+                }
+                else
+                {
+                    string script = string.Format("swal('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                }
+            }
         }
 
     }
