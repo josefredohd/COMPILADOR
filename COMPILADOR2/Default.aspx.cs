@@ -31,6 +31,8 @@ namespace COMPILADOR2
         static List<Variables> ListParam = new List<Variables>();
         // Variables para llvear el control de las Expresiones
         Nullable<int> Exp, Exp1, RExp;
+        // Variable para llevar control de Asignación
+        string Asig = null;
         //Declaración de variables
         string Tipo, Valor, Pertenece;
         //Llevar control de la funcion
@@ -39,6 +41,14 @@ namespace COMPILADOR2
         //Comparar funcion 
         string FunLlama = null;
         string Id, Id2;
+        //Controlador del parametro actual
+        int ContParAc = 0;
+        //Contador del parametro de la funcion llamada
+        int ContParFunc = 0;
+        //Contador del total de parametros de la funcion llamada
+        int ContPar = 0;
+        //Variable para  devolver expresion logica
+        int LOGICA = 4;
         int cont = 0;
         int nextok;
         int nextoken;
@@ -62,6 +72,7 @@ namespace COMPILADOR2
         int PROGRAMA = 157;
         int FALSO = 158;
         int VERDADERO = 159;
+        int LLAMAR = 160;
         int LineNum = 0;
         DataTable dt = new DataTable();
 
@@ -96,7 +107,6 @@ namespace COMPILADOR2
             {- 7,  - 7,  126,  - 7,  - 7,  - 7,  - 7,  - 7,     - 7,  - 7,  - 7,  - 7,  - 7,  - 7,  - 7,  - 7,  - 7,  - 7,  - 7,  - 7,  - 7,  - 7,     - 7,    - 7,   - 7,   - 7},
             { 24,   24,   24,   24,    24,  24,   24,   24,     - 8,   24,   24,   24,   24,   24,   24,   24,   24,   24,   127,   24,   24,   24,     24,     24,    24,   - 8}
         };
-
 
 
         protected void btnLimpiarToken_Click(object sender, EventArgs e)
@@ -1369,6 +1379,69 @@ namespace COMPILADOR2
             //Aun no se agregan las instrucciones
         }
 
+        //Función Asignación
+        public void Asignacion()
+        {
+            if (nextok != 103)
+            {
+                string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+            Id = LToken[cont].Lexema;
+            for (int i = 0; i <= LVar.Count; i++)
+            {
+                if (i == LVar.Count)
+                {
+                    string script = string.Format("swal('El nombre {0} no existe', '', 'error');", Id);
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+                if (Id == LVar[i].id)
+                {
+                    break;
+                }
+            }
+            Tipo = LToken[cont].Descripcion;
+            Asig = LToken[cont].Descripcion;
+            AsignValor();
+            NextToken();
+            if (nextok == 112 || nextok == 113 || nextok == 114 || nextok == 115 || nextok == 116)
+            {
+                NextToken();
+                if (nextok == LLAMAR)
+                {
+                    Llamar();
+                }
+                else
+                {
+                    Tipo = null;
+                    Expresion();
+                    if (Asig == RExp.ToString() || Asig == REAL.ToString() && RExp == ENTERO || Asig == ENTERO.ToString() && RExp == REAL)
+                    {
+                        if (nextok != 131)
+                        {
+                            string script = string.Format("swal('Se esperaba ;', '', 'error');");
+                            ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                            Reiniciar();
+                        }
+                    }
+                    else
+                    {
+                        string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                        Reiniciar();
+                    }
+                }
+            }
+            else
+            {
+                string script = string.Format("swal('Se esperaba un operador de asignación', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+        }
+
         //Funcion 
         public void Expresion()
         {
@@ -1525,6 +1598,208 @@ namespace COMPILADOR2
             }
         }
 
+        //Función para llamar una función
+        public void Llamar()
+        {
+            ContPar = 0;
+            ContParAc = 0;
+            ContParFunc = 0;
+            NextToken();
+            if (nextok != 103)
+            {
+                string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+            if (LToken[cont].Descripcion.Equals(Tipo, StringComparison.OrdinalIgnoreCase))
+            {
+                FunLlama = LToken[cont].Lexema;
+                for (int l = 0; l < ListParam.Count; l++)
+                {
+                    if (ListParam[l].pertenece == FunLlama)
+                    {
+                        ContPar++;
+                    }
+                }
+                for (int m = 0; m <= ListFuncion.Count; m++)
+                {
+                    if (m == ListFuncion.Count)
+                    {
+                        string script = string.Format("swal('La función {0} no existe', '', 'error');", FunLlama);
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                        Reiniciar();
+                    }
+                    if (ListFuncion[m] == FunLlama)
+                    {
+                        NextToken();
+                        if (nextok != 129)
+                        {
+                            string script = string.Format("swal('Se esperaba un (', '', 'error');");
+                            ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                            Reiniciar();
+                        }
+                        NextToken();
+                        if (nextok == 130)
+                        {
+                            for (int h = 0; h <= ListParam.Count; h++)
+                            {
+                                if (ContParFunc == 0 && ContParAc == 0 && h == ListParam.Count)
+                                {
+                                    NextToken();
+                                    if (nextok != 131)
+                                    {
+                                        string script = string.Format("swal('Se esperaba un ;', '', 'error');");
+                                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                        Reiniciar();
+                                    }
+                                    break;
+                                }
+                                if (ListParam[h].pertenece == FunLlama)
+                                {
+                                    string script = string.Format("swal('Faltan parámetros en la función {0}', '', 'error');", FunLlama);
+                                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                    Reiniciar();
+                                }
+
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            for (int h = 0; h <= ListParam.Count; h++)
+                            {
+                                if (h == ListParam.Count)
+                                {
+                                    string script = string.Format("swal('La función {0} no debe contener parámetros', '', 'error');", FunLlama);
+                                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                    Reiniciar();
+                                }
+                                if (ListParam[h].pertenece == FunLlama)
+                                {
+                                    LlamarParametros();
+                                    if (nextok != 130)
+                                    {
+                                        string script = string.Format("swal('Se esperaba un )', '', 'error');");
+                                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                        Reiniciar();
+                                    }
+                                    if (ContParAc == ContParFunc)
+                                    {
+                                        NextToken();
+                                        if (nextok != 131)
+                                        {
+                                            string script = string.Format("swal('Se esperaba un ;', '', 'error');");
+                                            ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                            Reiniciar();
+                                        }
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        string script = string.Format("swal('Se esperaban {0} parámetros en la función {1}', '', 'error');",ContPar, FunLlama);
+                                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                        Reiniciar();
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                string script = string.Format("swal('Los tipos en la asignación son incorrectos', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+        }
+
+        //Funcion para llamar parametros de una funcion
+        public void LlamarParametros()
+        {
+            Expresion();
+            if (Id != null)
+            {
+                for (int i = 0; i <= LVar.Count; i++)
+                {
+                    if (i == LVar.Count)
+                    {
+                        string script = string.Format("swal('El nombre {0} no existe', '', 'error');", Id);
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                        Reiniciar();
+                    }
+                    if (Id == LVar[i].id)
+                    {
+                        break;
+                    }
+                }
+            }
+            for (int l = 0; l <= ListParam.Count; l++)
+            {
+                if (l == ListParam.Count)
+                {
+                    if (nextok == 132)
+                    {
+                        string script = string.Format("swal('Demasiados parámetros en la función {0}', '', 'error');", FunLlama);
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                        Reiniciar();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if (ListParam[l].pertenece == FunLlama)
+                {
+                    ContParFunc++;
+                    if (nextok == 130 && ContParAc > 1)
+                    {
+                        break;
+                    }
+                    if (ContParFunc > 1)
+                    {
+                        NextToken();
+                        Expresion();
+                        if (Id != null)
+                        {
+                            for (int i = 0; i <= LVar.Count; i++)
+                            {
+                                if (i == LVar.Count)
+                                {
+                                    string script = string.Format("swal('El nombre {0} no existe', '', 'error');", Id);
+                                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                                    Reiniciar();
+                                }
+                                if (Id == LVar[i].id)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    Asig = ListParam[l].tipo;
+                    AsignValor();
+                    if (RExp.ToString() == Asig)
+                    {
+                        ContParAc++;
+                    }
+                    else if (RExp == LOGICA)
+                    {
+                        string script = string.Format("swal('La expresión no debe ser lógica', '', 'error');");
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                        Reiniciar();
+                    }
+                    else
+                    {
+                        string script = string.Format("swal('Algún parámetro no es compatible', '', 'error');");
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                        Reiniciar();
+                    }
+                }
+            }
+
+        }
 
 
         //Función para guardar variables de los tokens
@@ -1631,6 +1906,29 @@ namespace COMPILADOR2
             }
         }
 
+        //Función para asignarle valor al ID de la función de asignación
+        public void AsignValor()
+        {
+            if (Asig != null)
+            {
+                if (Asig.Equals("Entero", StringComparison.OrdinalIgnoreCase))
+                {
+                    Asig = ENTERO.ToString();
+                }
+                if (Asig.Equals("Real", StringComparison.OrdinalIgnoreCase))
+                {
+                    Asig = REAL.ToString();
+                }
+                if (Asig.Equals("Cadena", StringComparison.OrdinalIgnoreCase))
+                {
+                    Asig = CADENA.ToString();
+                }
+                if (Asig.Equals("Boleano", StringComparison.OrdinalIgnoreCase))
+                {
+                    Asig = BOLEANO.ToString();
+                }
+            }
+        }
 
         //Lista de errores
         public void ListErrores(int Error)
