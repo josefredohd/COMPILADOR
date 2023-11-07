@@ -33,21 +33,23 @@ namespace COMPILADOR2
         Nullable<int> Exp, Exp1, RExp;
         // Variable para llevar control de Asignación
         string Asig = null;
+        // Variable llevar el control del tipo de dato en la expresión
+        string TiDato = null;
         //Declaración de variables
         string Tipo, Valor, Pertenece;
-        //Llevar control de la funcion
+        //Llevar control de la función
         int TipoFuncion;
         string GFuncion;
-        //Comparar funcion 
+        //Comparar función 
         string FunLlama = null;
         string Id, Id2;
-        //Controlador del parametro actual
+        //Controlador del parámetro actual
         int ContParAc = 0;
-        //Contador del parametro de la funcion llamada
+        //Contador del parámetro de la función llamada
         int ContParFunc = 0;
-        //Contador del total de parametros de la funcion llamada
+        //Contador del total de parámetros de la función llamada
         int ContPar = 0;
-        //Variable para  devolver expresion logica
+        //Variable para  devolver expresión lógica
         int LOGICA = 4;
         int cont = 0;
         int nextok;
@@ -1442,10 +1444,134 @@ namespace COMPILADOR2
             }
         }
 
-        //Funcion 
+        //Funcion del Factor
+        public void Factor()
+        {
+            if (nextok == 103 || nextok == 102 || nextok == 101 || nextok == 127 || nextok == 129 || nextok == FALSO || nextok == VERDADERO)
+            {
+                Id = null;
+                if (nextok == 103)
+                {
+                    Id = LToken[cont].Lexema;
+                    for (int i = 0; i <= LVar.Count; i++)
+                    {
+                        if (i == LVar.Count)
+                        {
+                            string script = string.Format("swal('El nombre {0} no existe', '', 'error');", Id);
+                            ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                            Reiniciar();
+                        }
+                        if (Id == LVar[i].id)
+                        {
+                            break;
+                        }
+                    }
+                }
+                if (nextok == 129)
+                {
+                    NextToken();
+                    Expresion();
+                    if (nextok != 130)
+                    {
+                        string script = string.Format("swal('Se esperaba un )', '', 'error');");
+                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                        Reiniciar();
+                    }
+                    NextToken();
+                }
+                else
+                {
+                    TiDato = LToken[cont].Descripcion;
+                    ExprVal();
+                    NextToken();
+                }
+            }
+            else
+            {
+                //Aquí se agregó la modificación del diagrama de sintaxis
+                Expresion();
+                if (RExp != null)
+                {
+                    NextToken();
+                }
+                else
+                {
+                    string script = string.Format("swal('Se esperaba un Factor', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+            }
+        }
+
+        //Funcion Término
+        public void Termino()
+        {
+            Factor();
+            if (nextok == 107 || nextok == 106 || nextok == 111 || nextok == 108 || nextok == 124)
+            {
+                do
+                {
+                    NextToken();
+                    Factor();
+                } while (nextok == 107 || nextok == 106 || nextok == 111 || nextok == 108 || nextok == 124);
+            }
+        }
+
+        //Funcion de la Expresion Simple
+        public void ExpresionSimple()
+        {
+            if (nextok == 104 || nextok == 105 || nextok == 126)
+            {
+                NextToken();
+                Termino();
+                if (nextok == 104 || nextok == 105 || nextok == 125)
+                {
+                    do
+                    {
+                        NextToken();
+                        Termino();
+                    } while (nextok == 104 || nextok == 105 || nextok == 125);
+                }
+            }
+            else
+            {
+                Termino();
+                if (nextok == 104 || nextok == 105 || nextok == 125)
+                {
+                    do
+                    {
+                        NextToken();
+                        Termino();
+                    } while (nextok == 104 || nextok == 105 || nextok == 125);
+                }
+            }
+        }
+        //Funcion de la Expresion
         public void Expresion()
         {
-            ///////////////////
+            Exp1 = null;
+            ExpresionSimple();
+            if (nextok == 123 || nextok == 118 || nextok == 120 || nextok == 119 || nextok == 121 || nextok == 122)
+            {
+                Exp = Exp1;
+                Exp1 = null;
+                NextToken();
+                ExpresionSimple();
+                if (Exp == Exp1 || Exp == ENTERO && Exp1 == REAL || Exp1 == ENTERO && Exp == REAL)
+                {
+                    RExp = LOGICA;
+                }
+                else
+                {
+                    string script = string.Format("swal('Los datos de la expresión en la instrucción no son compatibles', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+            }
+            else
+            {
+                RExp = Exp1;
+            }
         }
 
         //Función Parametros
@@ -1926,6 +2052,72 @@ namespace COMPILADOR2
                 if (Asig.Equals("Boleano", StringComparison.OrdinalIgnoreCase))
                 {
                     Asig = BOLEANO.ToString();
+                }
+            }
+        }
+
+        //Función para asignar valor a la expresiones
+        public void ExprVal()
+        {
+            if (TiDato.Equals("Entero", StringComparison.OrdinalIgnoreCase))
+            {
+                if (Exp1 == null)
+                {
+                    Exp1 = ENTERO;//Si la expresión es null, se le asigna el valor de tipo entero
+                }
+                if (Exp1 == REAL)
+                {
+                    Exp1 = REAL;//Si el valor de la expresión es real, se le asigna el valor de tipo real
+                }
+                if (Exp1 == CADENA || Exp1 == BOLEANO)
+                {
+                    string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+            }
+            if (TiDato.Equals("Real", StringComparison.OrdinalIgnoreCase))
+            {
+                if (Exp1 == null)
+                {
+                    Exp1 = REAL;//Si la expresión es null, se le asigna el valor de tipo real
+                }
+                if (Exp1 == REAL || Exp1 == ENTERO)
+                {
+                    Exp1 = REAL; //Si el valor de la expresión es real o entero, se le asigna el valor de tipo real
+                }
+                else
+                {
+                    //Si el valor de la expresión es de tipo cadena o boleano da error, porque que no son compatibles con el tipo real
+                    string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+            }
+            if (TiDato.Equals("Cadena", StringComparison.OrdinalIgnoreCase))
+            {
+                if (Exp1 == null)
+                {
+                    Exp1 = CADENA;//Si la expresión es null, se le asigna el valor de tipo cadena
+                }
+                if (Exp1 == REAL || Exp1 == ENTERO || Exp1 == BOLEANO)
+                {
+                    string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+            }
+            if (TiDato.Equals("Boleano", StringComparison.OrdinalIgnoreCase))
+            {
+                if (Exp1 == null)
+                {
+                    Exp1 = BOLEANO;//Si la expresión es null, se le asigna el valor de tipo boleano
+                }
+                if (Exp1 == REAL || Exp1 == ENTERO || Exp1 == CADENA)
+                {
+                    string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
                 }
             }
         }
