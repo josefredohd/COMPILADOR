@@ -44,11 +44,11 @@ namespace COMPILADOR2
         string FunLlama = null;
         string Id, Id2;
         //Controlador del parámetro actual
-        int ContParAc = 0;
+        static int ContParAc = 0;
         //Contador del parámetro de la función llamada
-        int ContParFunc = 0;
+        static int ContParFunc = 0;
         //Contador del total de parámetros de la función llamada
-        int ContPar = 0;
+        static int ContPar = 0;
         //Variable para  devolver expresión lógica
         int LOGICA = 4;
         int cont = 0;
@@ -140,7 +140,7 @@ namespace COMPILADOR2
                 string extension = System.IO.Path.GetExtension(FileUpload1.PostedFile.FileName);
                 if (extension == ".txt")
                 {
-                    string sourceFile = @"/home/fredo/Desktop/COMPILADOR2/COMPILADOR2/arch/FREDO.txt";
+                    string sourceFile = @"/home/fredo/Projects/COMPILADOR/COMPILADOR2/arch/FREDO.txt";
                     string destinationFile = @"/home/fredo/archivos/FREDO.txt";
                     if (File.Exists(destinationFile))
                     {
@@ -166,17 +166,9 @@ namespace COMPILADOR2
 
         protected void btnArch_Click(object sender, EventArgs e)
         {
-            /*TextReader Leer = new StreamReader("FREDO.txt");
-            listArch.Items.Clear();
-            while ((contenidoArchivo = Leer.ReadLine()) != null)
-            {
-                listArch.Items.Add(contenidoArchivo);
-            }*/
-
             string fileText;
             string path = "/home/fredo/archivos/FREDO.txt";
             bool result = File.Exists(path);
-            //StreamReader sr = new StreamReader("/home/ubuntu/archivos/FREDO.txt");
             {
                 if (result == false)
                 {
@@ -199,7 +191,6 @@ namespace COMPILADOR2
             string fileText;
             string path = "/home/fredo/archivos/FREDO.txt";
             bool result = File.Exists(path);
-            //StreamReader sr = new StreamReader("/home/ubuntu/archivos/FREDO.txt");
             {
                 if (result == false)
                 {
@@ -1179,34 +1170,42 @@ namespace COMPILADOR2
         //Botón para sintaxis (bloque principal)
         protected void btnCompilar_Click(object sender, EventArgs e)
         {
-            nextok = LToken[cont].NumTok;
-            if (nextok != PROGRAMA)//Si el siguiente token es diferente a Programa, da error
+            if(LToken.Count > 0)
             {
-                string script = string.Format("swal('Se esperaba Programa', '', 'error');");
-                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                Reiniciar();
+                nextok = LToken[cont].NumTok;
+                if (nextok != PROGRAMA)//Si el siguiente token es diferente a Programa, da error
+                {
+                    string script = string.Format("swal('Se esperaba Programa', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+                NextToken();
+                if (nextok != 103)//Si el siguiente token es diferente a 103, da error
+                {
+                    string script1 = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script1, true);
+                    Reiniciar();
+                }
+                NextToken();
+                if (nextok != 131)
+                {
+                    string script2 = string.Format("swal('Se esperaba ;', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script2, true);
+                    Reiniciar();
+                }
+                NextToken();
+                Pertenece = "Global";//Se usará para saber qué variables son globales
+                DecVariables();
+                Funcion();
+                Bloque();
+                string script3 = string.Format("swal('Compilado correctamente', '', 'success');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script3, true);
             }
-            NextToken();
-            if (nextok != 103)//Si el siguiente token es diferente a 103, da error
+            else
             {
-                string script1 = string.Format("swal('Se esperaba un identificador', '', 'error');");
-                ClientScript.RegisterStartupScript(this.GetType(), "swal", script1, true);
-                Reiniciar();
-            }
-            NextToken();
-            if (nextok != 131)
-            {
-                string script2 = string.Format("swal('Se esperaba ;', '', 'error');");
+                string script2 = string.Format("swal('No hay Tokens', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script2, true);
-                Reiniciar();
             }
-            NextToken();
-            Pertenece = "Global";//Se usará para saber qué variables son globales
-            DecVariables();
-            Funcion();
-            Bloque();
-            string script3 = string.Format("swal('Compilado correctamente', '', 'error');");
-            ClientScript.RegisterStartupScript(this.GetType(), "swal", script3, true);
         }
 
         //Función para saber el siguiente Token
@@ -1439,6 +1438,103 @@ namespace COMPILADOR2
             else
             {
                 string script = string.Format("swal('Se esperaba un operador de asignación', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+        }
+
+        //Función IF
+        public void If()
+        {
+            NextToken();
+            if (nextok != 129)
+            {
+                string script = string.Format("swal('Se esperaba (', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+            NextToken();
+            Expresion();
+            if (RExp == LOGICA)
+            {
+                if (nextok != 130)
+                {
+                    string script = string.Format("swal('Se esperaba )', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+                NextToken();
+                if (nextok != ENTONCES)
+                {
+                    string script = string.Format("swal('Se esperaba ENTONCES', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+                NextToken();
+                Bloque();
+                NextToken();
+                if (nextok == SINO)
+                {
+                    NextToken();
+                    Bloque();
+                }
+            }
+            else
+            {
+                string script = string.Format("swal('Se esperaba una expresión lógica', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+        }
+
+        //Función For
+        public void For()
+        {
+            NextToken();
+            if (nextok != 103)
+            {
+                string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+            if (LToken[cont].Descripcion.Equals("Entero", StringComparison.OrdinalIgnoreCase) || LToken[cont].Descripcion.Equals("Real", StringComparison.OrdinalIgnoreCase))
+            {
+                NextToken();
+                if (nextok != 112)
+                {
+                    string script = string.Format("swal('Se esperaba :=', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+                NextToken();
+                if (nextok != 101)
+                {
+                    string script = string.Format("swal('Se esperaba un entero', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+                NextToken();
+                if (nextok != HASTA)
+                {
+                    string script = string.Format("swal('Se esperaba HASTA', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+
+                }
+                NextToken();
+                if (nextok != 101)
+                {
+                    string script = string.Format("swal('Se esperaba un entero', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+
+                }
+                NextToken();
+                Bloque();
+            }
+            else
+            {
+                string script = string.Format("swal('Se esperaba un entero o real', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
