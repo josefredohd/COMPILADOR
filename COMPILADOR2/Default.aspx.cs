@@ -129,6 +129,7 @@ namespace COMPILADOR2
             ListParam.Clear();
             ListFuncion.Clear();
             cont = 0;
+            ContPar = 0;
         }
 
         protected void btnSubir_Click(object sender, EventArgs e)
@@ -1535,6 +1536,82 @@ namespace COMPILADOR2
             else
             {
                 string script = string.Format("swal('Se esperaba un entero o real', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+        }
+
+        //Funcion While
+        public void While()
+        {
+            NextToken();
+            if (nextok != 129)
+            {
+                string script = string.Format("swal('Se esperaba (', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+            NextToken();
+            Expresion();
+            if (RExp == LOGICA)
+            {
+                if (nextok != 130)
+                {
+                    string script = string.Format("swal('Se esperaba )', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+                NextToken();
+                Bloque();
+            }
+            else
+            {
+                string script = string.Format("swal('Se esperaba una expresión lógica', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+        }
+
+        //Función Do While
+        public void Do_While()
+        {
+            NextToken();
+            Bloque();
+            NextToken();
+            if (nextok != MIENTRAS)
+            {
+                string script = string.Format("swal('Se esperaba Mientras', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+            NextToken();
+            if (nextok != 129)
+            {
+                string script = string.Format("swal('Se esperaba (', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                Reiniciar();
+            }
+            NextToken();
+            Expresion();
+            if (RExp == LOGICA)
+            {
+                if (nextok != 130)
+                {
+                    string script = string.Format("swal('Se esperaba )', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+                NextToken();
+                if (nextok != 131)
+                {
+                    string script = string.Format("swal('Se esperaba ;', '', 'error');");
+                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
+                    Reiniciar();
+                }
+            }
+            else
+            {
+                string script = string.Format("swal('Se esperaba una expresión lógica', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
