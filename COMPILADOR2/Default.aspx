@@ -5,13 +5,14 @@
     <title>Compilador</title>
     <link rel="shortcut icon" href="favicon-32x32.png">
     <link href="StyleSheet.css" rel="stylesheet" type="text/css" />
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
     <script src="codemirror/lib/codemirror.js"></script>
     <link href="codemirror/lib/codemirror.css" rel="stylesheet"/>
     <script src="codemirror/mode/xml.js"></script>
     <link href="codemirror/theme/elegant.css" rel="stylesheet"/>
         
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link href="arch/bootstrap-5.3.2-dist/css/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
         .CodeMirror {border: 1px solid black; margin: 0;}
         .contenedor { text-align: center; margin-top: 50px; }
