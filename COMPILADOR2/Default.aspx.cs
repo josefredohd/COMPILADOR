@@ -155,13 +155,13 @@ namespace COMPILADOR2
                         File.Delete(destinationFile);
                     }
                     FileUpload1.SaveAs(path + "FREDO" + extension);
-                    string script = string.Format("swal('Archivo cargado exitosamente', '', 'success');");
+                    string script = string.Format("Swal.fire('Archivo cargado exitosamente', '', 'success');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     System.IO.File.Copy(sourceFile, destinationFile);
                 }
                 else
                 {
-                    string script = string.Format("swal('Solo se admiten archivos .txt', '', 'error');");
+                    string script = string.Format("Swal.fire('Solo se admiten archivos .txt', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 }
             }
@@ -180,7 +180,7 @@ namespace COMPILADOR2
             {
                 if (result == false)
                 {
-                    string script = string.Format("swal('No existe el archivo', '', 'error');");
+                    string script = string.Format("Swal.fire('No existe el archivo', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 }
                 else
@@ -202,7 +202,7 @@ namespace COMPILADOR2
             {
                 if (result == false)
                 {
-                    string script = string.Format("swal('No existe el archivo', '', 'error');");
+                    string script = string.Format("Swal.fire('No existe el archivo', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 }
                 else
@@ -219,7 +219,7 @@ namespace COMPILADOR2
         {
             if (editArch.Text.Length == 0)
             {
-                string script2 = string.Format("swal('No se puede guardar un archivo vacío', '', 'error');");
+                string script2 = string.Format("Swal.fire('No se puede guardar un archivo vacío', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script2, true);
             }
             else
@@ -231,7 +231,7 @@ namespace COMPILADOR2
                 }
                 string writerfile = @"/home/fredo/archivos/FREDO.txt";
                 System.IO.File.WriteAllText(writerfile, this.editArch.Text);
-                string script = string.Format("swal('Archivo modificado exitosamente', '', 'success');");
+                string script = string.Format("Swal.fire('Archivo modificado exitosamente', '', 'success');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
 
             }
@@ -520,7 +520,7 @@ namespace COMPILADOR2
                                     }
                                     if (b == 20)
                                     {
-                                        if(Tipo != null)
+                                        if (Tipo != null)
                                         {
                                             Id = Acum;
                                             if (Guardar() == false)
@@ -1170,7 +1170,7 @@ namespace COMPILADOR2
                 }
                 while (Estado >= 0 && Estado <= 100);
             }
-            //string msg = string.Format("swal('Fin de Cadena', '', 'warning');");
+            //string msg = string.Format("Swal.fire('Fin de Cadena', '', 'warning');");
             //ClientScript.RegisterStartupScript(this.GetType(), "swal", msg, true);
             LineNum = 0;
         }
@@ -1182,21 +1182,21 @@ namespace COMPILADOR2
             nextok = LToken[cont].NumTok;
             if (nextok != PROGRAMA)//Si el siguiente token es diferente a Programa, da error
             {
-                string script = string.Format("swal('Se esperaba Programa', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba Programa', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
             NextToken();
             if (nextok != 103)//Si el siguiente token es diferente a 103, da error
             {
-                string script1 = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                string script1 = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script1, true);
                 Reiniciar();
             }
             NextToken();
             if (nextok != 131)
             {
-                string script2 = string.Format("swal('Se esperaba ;', '', 'error');");
+                string script2 = string.Format("Swal.fire('Se esperaba ;', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script2, true);
                 Reiniciar();
             }
@@ -1205,7 +1205,7 @@ namespace COMPILADOR2
             DecVariables();
             Funcion();
             Bloque();
-            string script3 = string.Format("swal('Compilado correctamente', '', 'success');");
+            string script3 = string.Format("Swal.fire('Compilado correctamente', '', 'success');");
             ClientScript.RegisterStartupScript(this.GetType(), "swal", script3, true);
         }
 
@@ -1234,7 +1234,7 @@ namespace COMPILADOR2
                     NextToken();
                     if (nextok != 103)
                     {
-                        string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
@@ -1243,9 +1243,11 @@ namespace COMPILADOR2
                     {
                         if (Id == LVar[i].id)//Si la variable que se esta declarando ya ha sido declarada anteriormente, da error
                         {
-                            string script = string.Format("swal('La variable {0} ya se ha declarado', '', 'error');", Id);
+                            string script = string.Format("Swal.fire('La variable {0} ya se ha declarado', '', 'error');", Id);
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                             Reiniciar();
+                            break;
+                            
                         }
                     }
                     NextToken();
@@ -1266,7 +1268,7 @@ namespace COMPILADOR2
                                         GuardarVar();
                                         if (nextok != 103)
                                         {
-                                            string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                                            string script = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                                             Reiniciar();
                                         }
@@ -1275,9 +1277,11 @@ namespace COMPILADOR2
                                         {
                                             if (Id == LVar[i].id)
                                             {
-                                                string script = string.Format("swal('La variable {0} ya se ha declarado', '', 'error');", Id);
+                                                string script = string.Format("Swal.fire('La variable {0} ya se ha declarado', '', 'error');", Id);
                                                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                                                 Reiniciar();
+                                                break;
+
                                             }
                                         }
                                         NextToken();
@@ -1286,7 +1290,7 @@ namespace COMPILADOR2
                             }
                             else
                             {
-                                string script = string.Format("swal('Se esperaba un valor', '', 'error');");
+                                string script = string.Format("Swal.fire('Se esperaba un valor', '', 'error');");
                                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                                 Reiniciar();
                             }
@@ -1302,7 +1306,7 @@ namespace COMPILADOR2
                             Id = LToken[cont].Lexema;//Se guarda el identificador
                             if (nextok != 103)
                             {
-                                string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                                string script = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                                 Reiniciar();
                             }
@@ -1310,9 +1314,11 @@ namespace COMPILADOR2
                             {
                                 if (Id == LVar[i].id)
                                 {
-                                    string script = string.Format("swal('La variable {0} ya se ha declarado', '', 'error');", Id);
+                                    string script = string.Format("Swal.fire('La variable {0} ya se ha declarado', '', 'error');", Id);
                                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                                     Reiniciar();
+                                    break;
+                                    
                                 }
                             }
                             NextToken();
@@ -1326,7 +1332,7 @@ namespace COMPILADOR2
                                 }
                                 else
                                 {
-                                    string script = string.Format("swal('Se esperaba un valor', '', 'error');");
+                                    string script = string.Format("Swal.fire('Se esperaba un valor', '', 'error');");
                                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                                     Reiniciar();
                                 }
@@ -1336,7 +1342,7 @@ namespace COMPILADOR2
                     }
                     if (nextok != 131)
                     {
-                        string script = string.Format("swal('Se esperaba un ;', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba un ;', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
@@ -1354,7 +1360,7 @@ namespace COMPILADOR2
         {
             if (nextok != INICIO)
             {
-                string script = string.Format("swal('Se esperaba inicio del Bloque', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba inicio del Bloque', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1369,7 +1375,7 @@ namespace COMPILADOR2
             }
             if (nextok != FIN)
             {
-                string script = string.Format("swal('Se esperaba FIN', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba FIN', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1423,7 +1429,7 @@ namespace COMPILADOR2
         {
             if (nextok != 103)
             {
-                string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1432,7 +1438,7 @@ namespace COMPILADOR2
             {
                 if (i == LVar.Count)
                 {
-                    string script = string.Format("swal('El nombre {0} no existe', '', 'error');", Id);
+                    string script = string.Format("Swal.fire('El nombre {0} no existe', '', 'error');", Id);
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     //Reiniciar();
                     break;
@@ -1461,14 +1467,14 @@ namespace COMPILADOR2
                     {
                         if (nextok != 131)
                         {
-                            string script = string.Format("swal('Se esperaba ;', '', 'error');");
+                            string script = string.Format("Swal.fire('Se esperaba ;', '', 'error');");
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                             Reiniciar();
                         }
                     }
                     else
                     {
-                        string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                        string script = string.Format("Swal.fire('Los datos no son compatibles', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
@@ -1476,7 +1482,7 @@ namespace COMPILADOR2
             }
             else
             {
-                string script = string.Format("swal('Se esperaba un operador de asignación', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba un operador de asignación', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1488,7 +1494,7 @@ namespace COMPILADOR2
             NextToken();
             if (nextok != 129)
             {
-                string script = string.Format("swal('Se esperaba (', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba (', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1498,14 +1504,14 @@ namespace COMPILADOR2
             {
                 if (nextok != 130)
                 {
-                    string script = string.Format("swal('Se esperaba )', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba )', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
                 NextToken();
                 if (nextok != ENTONCES)
                 {
-                    string script = string.Format("swal('Se esperaba ENTONCES', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba ENTONCES', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -1520,7 +1526,7 @@ namespace COMPILADOR2
             }
             else
             {
-                string script = string.Format("swal('Se esperaba una expresión lógica', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba una expresión lógica', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1532,30 +1538,28 @@ namespace COMPILADOR2
             NextToken();
             if (nextok != 103)
             {
-                string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                Reiniciar();
             }
             if (LToken[cont].Descripcion.Equals("Entero", StringComparison.OrdinalIgnoreCase) || LToken[cont].Descripcion.Equals("Real", StringComparison.OrdinalIgnoreCase))
             {
                 NextToken();
                 if (nextok != 112)
                 {
-                    string script = string.Format("swal('Se esperaba :=', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba :=', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                    Reiniciar();
                 }
                 NextToken();
                 if (nextok != 101)
                 {
-                    string script = string.Format("swal('Se esperaba un entero', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba un entero', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
                 NextToken();
                 if (nextok != HASTA)
                 {
-                    string script = string.Format("swal('Se esperaba HASTA', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba HASTA', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
 
@@ -1563,7 +1567,7 @@ namespace COMPILADOR2
                 NextToken();
                 if (nextok != 101)
                 {
-                    string script = string.Format("swal('Se esperaba un entero', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba un entero', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
 
@@ -1573,7 +1577,7 @@ namespace COMPILADOR2
             }
             else
             {
-                string script = string.Format("swal('Se esperaba un entero o real', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba un entero o real', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1585,7 +1589,7 @@ namespace COMPILADOR2
             NextToken();
             if (nextok != 129)
             {
-                string script = string.Format("swal('Se esperaba (', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba (', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1595,7 +1599,7 @@ namespace COMPILADOR2
             {
                 if (nextok != 130)
                 {
-                    string script = string.Format("swal('Se esperaba )', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba )', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -1604,7 +1608,7 @@ namespace COMPILADOR2
             }
             else
             {
-                string script = string.Format("swal('Se esperaba una expresión lógica', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba una expresión lógica', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1618,14 +1622,14 @@ namespace COMPILADOR2
             NextToken();
             if (nextok != MIENTRAS)
             {
-                string script = string.Format("swal('Se esperaba Mientras', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba Mientras', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
             NextToken();
             if (nextok != 129)
             {
-                string script = string.Format("swal('Se esperaba (', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba (', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1635,21 +1639,21 @@ namespace COMPILADOR2
             {
                 if (nextok != 130)
                 {
-                    string script = string.Format("swal('Se esperaba )', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba )', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
                 NextToken();
                 if (nextok != 131)
                 {
-                    string script = string.Format("swal('Se esperaba ;', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba ;', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
             }
             else
             {
-                string script = string.Format("swal('Se esperaba una expresión lógica', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba una expresión lógica', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -1661,9 +1665,8 @@ namespace COMPILADOR2
             NextToken();
             if (nextok != 129)
             {
-                string script = string.Format("swal('Se esperaba (', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba (', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                Reiniciar();
             }
             NextToken();
             if (nextok == 127)
@@ -1671,26 +1674,23 @@ namespace COMPILADOR2
                 NextToken();
                 if (nextok != 132)
                 {
-                    string script = string.Format("swal('Se esperaba ,', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba ,', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                    Reiniciar();
                 }
                 NextToken();
             }
             if (nextok != 103)
             {
-                string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                Reiniciar();
             }
             Id = LToken[cont].Lexema;
             for (int i = 0; i <= LVar.Count; i++)
             {
                 if (i == LVar.Count)
                 {
-                    string script = string.Format("swal('El identificador {0} no ha sido declarado', '', 'error');", Id);
+                    string script = string.Format("Swal.fire('El identificador {0} no ha sido declarado', '', 'error');", Id);
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                    Reiniciar();
                     break;
                 }
                 if (Id == LVar[i].id)
@@ -1698,16 +1698,16 @@ namespace COMPILADOR2
                     NextToken();
                     if (nextok != 130)
                     {
-                        string script = string.Format("swal('Se esperaba )', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba )', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        Reiniciar();
+                        break;
                     }
                     NextToken();
                     if (nextok != 131)
                     {
-                        string script = string.Format("swal('Se esperaba ;', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba ;', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        Reiniciar();
+                        break;
                     }
                     break;
                 }
@@ -1720,9 +1720,8 @@ namespace COMPILADOR2
             NextToken();
             if (nextok != 129)
             {
-                string script = string.Format("swal('Se esperaba (', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba (', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                Reiniciar();
             }
             NextToken();
             if (nextok == 127)
@@ -1733,18 +1732,16 @@ namespace COMPILADOR2
                     NextToken();
                     if (nextok != 103)
                     {
-                        string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        Reiniciar();
                     }
                     Id = LToken[cont].Lexema;
                     for (int i = 0; i <= LVar.Count; i++)
                     {
                         if (i == LVar.Count)
                         {
-                            string script = string.Format("swal('El identificador {0} no ha sido declarado', '', 'error');", Id);
+                            string script = string.Format("Swal.fire('El identificador {0} no ha sido declarado', '', 'error');", Id);
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                            Reiniciar();
                             break;
                         }
                         if (Id == LVar[i].id)
@@ -1752,16 +1749,14 @@ namespace COMPILADOR2
                             NextToken();
                             if (nextok != 130)
                             {
-                                string script = string.Format("swal('Se esperaba )', '', 'error');");
+                                string script = string.Format("Swal.fire('Se esperaba )', '', 'error');");
                                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                                Reiniciar();
                             }
                             NextToken();
                             if (nextok != 131)
                             {
-                                string script = string.Format("swal('Se esperaba ;', '', 'error');");
+                                string script = string.Format("Swal.fire('Se esperaba ;', '', 'error');");
                                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                                Reiniciar();
                             }
                             break;
                         }
@@ -1771,14 +1766,14 @@ namespace COMPILADOR2
                 {
                     if (nextok != 130)
                     {
-                        string script = string.Format("swal('Se esperaba )', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba )', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
                     NextToken();
                     if (nextok != 131)
                     {
-                        string script = string.Format("swal('Se esperaba ;', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba ;', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
@@ -1792,7 +1787,7 @@ namespace COMPILADOR2
                 {
                     if (i == LVar.Count)
                     {
-                        string script = string.Format("swal('El identificador {0} no ha sido declarado', '', 'error');", Id);
+                        string script = string.Format("Swal.fire('El identificador {0} no ha sido declarado', '', 'error');", Id);
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                         break;
@@ -1802,14 +1797,14 @@ namespace COMPILADOR2
                         NextToken();
                         if (nextok != 130)
                         {
-                            string script = string.Format("swal('Se esperaba )', '', 'error');");
+                            string script = string.Format("Swal.fire('Se esperaba )', '', 'error');");
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                             Reiniciar();
                         }
                         NextToken();
                         if (nextok != 131)
                         {
-                            string script = string.Format("swal('Se esperaba ;', '', 'error');");
+                            string script = string.Format("Swal.fire('Se esperaba ;', '', 'error');");
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                             Reiniciar();
                         }
@@ -1832,7 +1827,7 @@ namespace COMPILADOR2
                     {
                         if (i == LVar.Count)
                         {
-                            string script = string.Format("swal('El nombre {0} no existe', '', 'error');", Id);
+                            string script = string.Format("Swal.fire('El nombre {0} no existe', '', 'error');", Id);
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                             //Reiniciar();
                             break;
@@ -1849,7 +1844,7 @@ namespace COMPILADOR2
                     Expresion();
                     if (nextok != 130)
                     {
-                        string script = string.Format("swal('Se esperaba un )', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba un )', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
@@ -1864,18 +1859,8 @@ namespace COMPILADOR2
             }
             else
             {
-                //Aquí se agregó la modificación del diagrama de sintaxis
-                Expresion();
-                if (RExp != null)
-                {
-                    NextToken();
-                }
-                else
-                {
-                    string script = string.Format("swal('Se esperaba un Factor', '', 'error');");
-                    ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                    Reiniciar();
-                }
+                string script = string.Format("Swal.fire('Se esperaba un Factor', '', 'error');");
+                ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
             }
         }
 
@@ -1939,7 +1924,7 @@ namespace COMPILADOR2
                 }
                 else
                 {
-                    string script = string.Format("swal('Los datos de la expresión en la instrucción no son compatibles', '', 'error');");
+                    string script = string.Format("Swal.fire('Los datos de la expresión en la instrucción no son compatibles', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -1961,7 +1946,7 @@ namespace COMPILADOR2
                     NextToken();
                     if (nextok != 103)
                     {
-                        string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
@@ -1970,7 +1955,7 @@ namespace COMPILADOR2
                     {
                         if (Id == ListParam[i].id && Pertenece == ListParam[i].pertenece)
                         {
-                            string script = string.Format("swal('El parametro {0} está duplicado', '', 'error');", Id);
+                            string script = string.Format("Swal.fire('El parametro {0} está duplicado', '', 'error');", Id);
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                             Reiniciar();
                         }
@@ -1990,7 +1975,7 @@ namespace COMPILADOR2
         {
             if (nextok != INICIO)
             {
-                string script = string.Format("swal('Se esperaba un ;', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba un ;', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -2005,7 +1990,7 @@ namespace COMPILADOR2
             }
             if (nextok != REGRESA)
             {
-                string script = string.Format("swal('Se esperaba Regresa', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba Regresa', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -2016,14 +2001,14 @@ namespace COMPILADOR2
                 if (nextok != 131)
                 {
 
-                    string script = string.Format("swal('Se esperaba un ;', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba un ;', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
                 NextToken();
                 if (nextok != FIN)
                 {
-                    string script = string.Format("swal('Se esperaba FIN', '', 'error');");
+                    string script = string.Format("Swal.fire('Se esperaba FIN', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -2031,13 +2016,13 @@ namespace COMPILADOR2
             }
             else
             {
-                string script = string.Format("swal('EL dato regresado es incorrecto', '', 'error');");
+                string script = string.Format("Swal.fire('EL dato regresado es incorrecto', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
         }
 
-       
+
         public void Funcion()
         {
             if (nextok == FUNCION)
@@ -2056,9 +2041,9 @@ namespace COMPILADOR2
                         {
                             if (Id == LVar[i].id)
                             {
-                                string script = string.Format("swal('Ya se contiene una definicion para {0}', '', 'error');", Id);
+                                string script = string.Format("Swal.fire('El Id {0} ya existe', '', 'error');", Id);
                                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                                Reiniciar();
+                                break;
                             }
                         }
                         GuardarVar();
@@ -2067,14 +2052,14 @@ namespace COMPILADOR2
                         ListFuncion.Add(GFuncion);
                         if (nextok != 103)
                         {
-                            string script = string.Format("swal('Se esperaba un idetificador', '', 'error');");
+                            string script = string.Format("Swal.fire('Se esperaba un idetificador', '', 'error');");
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                             Reiniciar();
                         }
                         NextToken();
                         if (nextok != 129)
                         {
-                            string script = string.Format("swal('Se esperaba un (', '', 'error');");
+                            string script = string.Format("Swal.fire('Se esperaba un (', '', 'error');");
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                             Reiniciar();
                         }
@@ -2082,7 +2067,7 @@ namespace COMPILADOR2
                         Parametros();
                         if (nextok != 130)
                         {
-                            string script = string.Format("swal('Se esperaba un )', '', 'error');");
+                            string script = string.Format("Swal.fire('Se esperaba un )', '', 'error');");
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                             Reiniciar();
                         }
@@ -2091,7 +2076,7 @@ namespace COMPILADOR2
                     }
                     else
                     {
-                        string script = string.Format("swal('Se esperaba un tipo de dato', '', 'error');");
+                        string script = string.Format("Swal.fire('Se esperaba un tipo de dato', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
@@ -2109,7 +2094,7 @@ namespace COMPILADOR2
             NextToken();
             if (nextok != 103)
             {
-                string script = string.Format("swal('Se esperaba un identificador', '', 'error');");
+                string script = string.Format("Swal.fire('Se esperaba un identificador', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -2127,7 +2112,7 @@ namespace COMPILADOR2
                 {
                     if (m == ListFuncion.Count)
                     {
-                        string script = string.Format("swal('La función {0} no existe', '', 'error');", FunLlama);
+                        string script = string.Format("Swal.fire('La función {0} no existe', '', 'error');", FunLlama);
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
@@ -2136,9 +2121,10 @@ namespace COMPILADOR2
                         NextToken();
                         if (nextok != 129)
                         {
-                            string script = string.Format("swal('Se esperaba un (', '', 'error');");
+                            string script = string.Format("Swal.fire('Se esperaba un (', '', 'error');");
                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                            Reiniciar();
+                            //Reiniciar();
+                            break;
                         }
                         NextToken();
                         if (nextok == 130)
@@ -2150,7 +2136,7 @@ namespace COMPILADOR2
                                     NextToken();
                                     if (nextok != 131)
                                     {
-                                        string script = string.Format("swal('Se esperaba un ;', '', 'error');");
+                                        string script = string.Format("Swal.fire('Se esperaba un ;', '', 'error');");
                                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                                         Reiniciar();
                                     }
@@ -2158,9 +2144,9 @@ namespace COMPILADOR2
                                 }
                                 if (ListParam[h].pertenece == FunLlama)
                                 {
-                                    string script = string.Format("swal('Faltan parámetros en la función {0}', '', 'error');", FunLlama);
+                                    string script = string.Format("Swal.fire('Faltan parámetros en la función {0}', '', 'error');", FunLlama);
                                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                                    Reiniciar();
+                                    break;
                                 }
 
                             }
@@ -2172,35 +2158,38 @@ namespace COMPILADOR2
                             {
                                 if (h == ListParam.Count)
                                 {
-                                    string script = string.Format("swal('La función {0} no debe contener parámetros', '', 'error');", FunLlama);
+                                    string script = string.Format("Swal.fire('La función {0} no debe contener parámetros', '', 'error');", FunLlama);
                                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                                    Reiniciar();
+                                    //Reiniciar();
+                                    break;
                                 }
                                 if (ListParam[h].pertenece == FunLlama)
                                 {
                                     LlamarParametros();
                                     if (nextok != 130)
                                     {
-                                        string script = string.Format("swal('Se esperaba un )', '', 'error');");
+                                        string script = string.Format("Swal.fire('Se esperaba un )', '', 'error');");
                                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                                        Reiniciar();
+                                        break;
                                     }
                                     if (ContParAc == ContParFunc)
                                     {
                                         NextToken();
                                         if (nextok != 131)
                                         {
-                                            string script = string.Format("swal('Se esperaba un ;', '', 'error');");
+                                            string script = string.Format("Swal.fire('Se esperaba un ;', '', 'error');");
                                             ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                                            Reiniciar();
+                                            //Reiniciar();
+                                            break;
                                         }
                                         break;
                                     }
                                     else
                                     {
-                                        string script = string.Format("swal('Se esperaban {0} parámetros en la función {1}', '', 'error');",ContPar, FunLlama);
+                                        string script = string.Format("Swal.fire('Se esperaban {0} parámetros en la función {1}', '', 'error');", ContPar, FunLlama);
                                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                                        Reiniciar();
+                                        //Reiniciar();
+                                        break;
                                     }
                                 }
                             }
@@ -2211,7 +2200,7 @@ namespace COMPILADOR2
             }
             else
             {
-                string script = string.Format("swal('Los tipos en la asignación son incorrectos', '', 'error');");
+                string script = string.Format("Swal.fire('Los tipos en la asignación son incorrectos', '', 'error');");
                 ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                 Reiniciar();
             }
@@ -2227,7 +2216,7 @@ namespace COMPILADOR2
                 {
                     if (i == LVar.Count)
                     {
-                        string script = string.Format("swal('El nombre {0} no existe', '', 'error');", Id);
+                        string script = string.Format("Swal.fire('El nombre {0} no existe', '', 'error');", Id);
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         //Reiniciar();
                         break;
@@ -2244,9 +2233,10 @@ namespace COMPILADOR2
                 {
                     if (nextok == 132)
                     {
-                        string script = string.Format("swal('Demasiados parámetros en la función {0}', '', 'error');", FunLlama);
+                        string script = string.Format("Swal.fire('Demasiados parámetros en la función {0}', '', 'error');", FunLlama);
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        Reiniciar();
+                        //Reiniciar();
+                        break;
                     }
                     else
                     {
@@ -2270,7 +2260,7 @@ namespace COMPILADOR2
                             {
                                 if (i == LVar.Count)
                                 {
-                                    string script = string.Format("swal('El nombre {0} no existe', '', 'error');", Id);
+                                    string script = string.Format("Swal.fire('El nombre {0} no existe', '', 'error');", Id);
                                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                                     //Reiniciar();
                                     break;
@@ -2290,13 +2280,13 @@ namespace COMPILADOR2
                     }
                     else if (RExp == LOGICA)
                     {
-                        string script = string.Format("swal('La expresión no debe ser lógica', '', 'error');");
+                        string script = string.Format("Swal.fire('La expresión no debe ser lógica', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
                     else
                     {
-                        string script = string.Format("swal('Algún parámetro no es compatible', '', 'error');");
+                        string script = string.Format("Swal.fire('Algún parámetro no es compatible', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         Reiniciar();
                     }
@@ -2369,7 +2359,7 @@ namespace COMPILADOR2
             {
                 if (valor != 101)
                 {
-                    string script = string.Format("swal('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
+                    string script = string.Format("Swal.fire('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -2379,7 +2369,7 @@ namespace COMPILADOR2
             {
                 if (valor != 102)
                 {
-                    string script = string.Format("swal('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
+                    string script = string.Format("Swal.fire('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -2389,7 +2379,7 @@ namespace COMPILADOR2
             {
                 if (valor != 127)
                 {
-                    string script = string.Format("swal('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
+                    string script = string.Format("Swal.fire('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -2403,7 +2393,7 @@ namespace COMPILADOR2
                 }
                 else
                 {
-                    string script = string.Format("swal('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
+                    string script = string.Format("Swal.fire('No se puede asignar el valor {0} porque no es compatible', '', 'error');", Va.ToString());
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -2449,7 +2439,7 @@ namespace COMPILADOR2
                 }
                 if (Exp1 == CADENA || Exp1 == BOLEANO)
                 {
-                    string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                    string script = string.Format("Swal.fire('Los datos no son compatibles', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -2467,7 +2457,7 @@ namespace COMPILADOR2
                 else
                 {
                     //Si el valor de la expresión es de tipo cadena o boleano da error, porque que no son compatibles con el tipo real
-                    string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                    string script = string.Format("Swal.fire('Los datos no son compatibles', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -2480,7 +2470,7 @@ namespace COMPILADOR2
                 }
                 if (Exp1 == REAL || Exp1 == ENTERO || Exp1 == BOLEANO)
                 {
-                    string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                    string script = string.Format("Swal.fire('Los datos no son compatibles', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -2493,7 +2483,7 @@ namespace COMPILADOR2
                 }
                 if (Exp1 == REAL || Exp1 == ENTERO || Exp1 == CADENA)
                 {
-                    string script = string.Format("swal('Los datos no son compatibles', '', 'error');");
+                    string script = string.Format("Swal.fire('Los datos no son compatibles', '', 'error');");
                     ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                     Reiniciar();
                 }
@@ -2508,7 +2498,7 @@ namespace COMPILADOR2
             {
                 case -1:
                     {
-                        string script = string.Format("swal('ERROR', '', 'error');");
+                        string script = string.Format("Swal.fire('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un número o un -");
                         tabla.DataSource = dt;
@@ -2518,7 +2508,7 @@ namespace COMPILADOR2
                 case -2:
                     {
                         Acum = "";
-                        string script = string.Format("swal('ERROR', '', 'error');");
+                        string script = string.Format("Swal.fire('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un número");
                         tabla.DataSource = dt;
@@ -2528,7 +2518,7 @@ namespace COMPILADOR2
                 case -3:
                     {
                         Acum = "";
-                        string script = string.Format("swal('ERROR', '', 'error');");
+                        string script = string.Format("Swal.fire('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba /");
                         tabla.DataSource = dt;
@@ -2538,7 +2528,7 @@ namespace COMPILADOR2
                 case -4:
                     {
                         Acum = "";
-                        string script = string.Format("swal('ERROR', '', 'error');");
+                        string script = string.Format("Swal.fire('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un ==");
                         tabla.DataSource = dt;
@@ -2548,7 +2538,7 @@ namespace COMPILADOR2
                 case -5:
                     {
                         Acum = "";
-                        string script = string.Format("swal('ERROR', '', 'error');");
+                        string script = string.Format("Swal.fire('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba una O");
                         tabla.DataSource = dt;
@@ -2558,7 +2548,7 @@ namespace COMPILADOR2
                 case -6:
                     {
                         Acum = "";
-                        string script = string.Format("swal('ERROR', '', 'error');");
+                        string script = string.Format("Swal.fire('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un operador lógico");
                         tabla.DataSource = dt;
@@ -2568,7 +2558,7 @@ namespace COMPILADOR2
                 case -7:
                     {
                         Acum = "";
-                        string script = string.Format("swal('ERROR', '', 'error');");
+                        string script = string.Format("Swal.fire('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un punto");
                         tabla.DataSource = dt;
@@ -2588,7 +2578,7 @@ namespace COMPILADOR2
                 case -9:
                     {
                         Acum = "";
-                        string script = string.Format("swal('ERROR', '', 'error');");
+                        string script = string.Format("Swal.fire('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Se esperaba un asignador :=");
                         tabla.DataSource = dt;
@@ -2598,7 +2588,7 @@ namespace COMPILADOR2
                 case -10:
                     {
                         Acum = "";
-                        string script = string.Format("swal('ERROR', '', 'error');");
+                        string script = string.Format("Swal.fire('ERROR', '', 'error');");
                         ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
                         dt.Rows.Add(LineNum, "", Error, "Error: Caracter inválido");
                         tabla.DataSource = dt;
@@ -2607,12 +2597,16 @@ namespace COMPILADOR2
                     }
                 case -11:
                     {
-                        Acum = "";
-                        string script = string.Format("swal('ERROR', '', 'error');");
-                        ClientScript.RegisterStartupScript(this.GetType(), "swal", script, true);
-                        dt.Rows.Add(LineNum, "", Error, "Error: Ya se declaró la variable");
+                        dt.Rows.Add(LineNum, "103", Error, "Error: Ya se declaró la variable");
                         tabla.DataSource = dt;
                         tabla.DataBind();
+                        LToken.Add(new Tokens()
+                        {
+                            NumTok = 103,
+                            Descripcion = "Identificador",
+                            Lexema = Acum
+                        });
+                        Acum = "";
                         break;
                     }
             }
