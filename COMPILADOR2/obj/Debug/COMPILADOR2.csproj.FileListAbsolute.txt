@@ -16,3 +16,9 @@
 /home/fredo/Desktop/COMPILADOR2/COMPILADOR2/obj/Debug/COMPILADOR2.csproj.CoreCompileInputs.cache
 /home/fredo/Desktop/COMPILADOR2/COMPILADOR2/obj/Debug/COMPILADOR2.dll
 /home/fredo/Desktop/COMPILADOR2/COMPILADOR2/obj/Debug/COMPILADOR2.pdb
+/home/fredo/Projects/COMPILADOR/COMPILADOR2/bin/COMPILADOR2.dll
+/home/fredo/Projects/COMPILADOR/COMPILADOR2/bin/COMPILADOR2.pdb
+/home/fredo/Projects/COMPILADOR/COMPILADOR2/obj/Debug/COMPILADOR2.csproj.AssemblyReference.cache
+/home/fredo/Projects/COMPILADOR/COMPILADOR2/obj/Debug/COMPILADOR2.csproj.CoreCompileInputs.cache
+/home/fredo/Projects/COMPILADOR/COMPILADOR2/obj/Debug/COMPILADOR2.dll
+/home/fredo/Projects/COMPILADOR/COMPILADOR2/obj/Debug/COMPILADOR2.pdb

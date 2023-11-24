@@ -1500,7 +1500,7 @@ namespace COMPILADOR2
             }
             NextToken();
             Expresion();
-            if (RExp == LOGICA)
+            if (RExp == LOGICA || RExp == BOLEANO)
             {
                 if (nextok != 130)
                 {
@@ -1595,7 +1595,7 @@ namespace COMPILADOR2
             }
             NextToken();
             Expresion();
-            if (RExp == LOGICA)
+            if (RExp == LOGICA || RExp == BOLEANO)
             {
                 if (nextok != 130)
                 {
@@ -1635,7 +1635,7 @@ namespace COMPILADOR2
             }
             NextToken();
             Expresion();
-            if (RExp == LOGICA)
+            if (RExp == LOGICA || RExp == BOLEANO)
             {
                 if (nextok != 130)
                 {

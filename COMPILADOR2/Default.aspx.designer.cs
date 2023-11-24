@@ -15,8 +15,6 @@ namespace COMPILADOR2 {
 		
 		protected System.Web.UI.HtmlControls.HtmlForm form1;
 		
-		protected System.Web.UI.WebControls.Button btnLimpiarToken;
-		
 		protected System.Web.UI.WebControls.TextBox editArch;
 		
 		protected System.Web.UI.WebControls.FileUpload FileUpload1;
@@ -29,7 +27,9 @@ namespace COMPILADOR2 {
 		
 		protected System.Web.UI.WebControls.Button btnGuardarArch;
 		
-		protected System.Web.UI.WebControls.Button btnLimpiarArch;
+		protected System.Web.UI.WebControls.Button btnLimpiarToken;
+		
+		protected System.Web.UI.WebControls.Button btnCompilar;
 		
 		protected System.Web.UI.WebControls.GridView tabla;
 	}
